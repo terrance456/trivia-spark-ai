@@ -23,7 +23,6 @@ jobs:
 
       - name: Add env file
         run: |
-          cd ./client/
           touch .env.production
           echo AUTH_GOOGLE_ID=null >> .env.production
           echo AUTH_GOOGLE_SECRET=null >> .env.production
