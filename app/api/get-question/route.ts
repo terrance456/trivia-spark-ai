@@ -5,6 +5,31 @@ import { auth } from "@/src/auth/auth";
 import { ObjectId } from "mongodb";
 import { NextRequest } from "next/server";
 
+/**
+ * @swagger
+ * /api/get-question:
+ *   post:
+ *     tags: [Questions]
+ *     description: Returns next questions in the quiz
+ *     requestBody:
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: "#/components/schemas/GetQuestionPayload"
+ *
+ *     responses:
+ *        "200":
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: "#/components/schemas/GenerateQuestionResponse"
+ *        "400":
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: "#/components/schemas/GenericErrorModel"
+ */
+
 export async function POST(request: NextRequest) {
   let payload: GetQuestionRequestSchemaT;
   try {

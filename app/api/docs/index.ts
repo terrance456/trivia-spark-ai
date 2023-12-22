@@ -81,5 +81,29 @@
  *       type: object
  *       properties:
  *          success:
- *            type: boolean
+ *            type: string
+ *
+ *    GetOngoingSessionResponse:
+ *       type: array
+ *       items:
+ *          type: object
+ *          properties:
+ *            question_id:
+ *              type: string
+ *            topic_id:
+ *              type: string
+ *            session_id:
+ *              type: string
+ *
+ *    CompleteQuizPayload:
+ *        type: object
+ *        properties:
+ *          session_id:
+ *             type: string
+ *
+ *    CompleteQuizResponse:
+ *        type: object
+ *        properties:
+ *          completion_id:
+ *             type: string
  */
