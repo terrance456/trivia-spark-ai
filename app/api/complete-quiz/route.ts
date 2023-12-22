@@ -9,7 +9,7 @@ import { NextRequest } from "next/server";
 /**
  * @swagger
  * /api/complete-quiz:
- *   get:
+ *   post:
  *     tags: [Summary]
  *     description: Ends the quiz session and returns completion_id
  *     requestBody:

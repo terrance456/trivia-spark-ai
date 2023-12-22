@@ -94,6 +94,12 @@
  *              type: string
  *            session_id:
  *              type: string
+ *            topic_name:
+ *              type: string
+ *            no_of_question:
+ *              type: number
+ *            started_at:
+ *              type: number
  *
  *    CompleteQuizPayload:
  *        type: object
@@ -106,4 +112,49 @@
  *        properties:
  *          completion_id:
  *             type: string
+ *
+ *    FinalSummaryQuestionAnswerModel:
+ *      type: object
+ *      properties:
+ *         question_id:
+ *          type: string
+ *         question_title:
+ *          type: string
+ *         user_answer_id:
+ *          type: string
+ *         answer_id:
+ *          type: string
+ *         asnwers:
+ *          type: array
+ *          items:
+ *            $ref: "#/components/schemas/Answer"
+ *
+ *    GetQuizSummaryModel:
+ *      type: object
+ *      properties:
+ *          _id:
+ *           type: string
+ *          questions:
+ *           type: array
+ *           items:
+ *              $ref: "#/components/schemas/FinalSummaryQuestionAnswerModel"
+ *          started_at:
+ *           type: number
+ *          completed_at:
+ *           type: number
+ *          topic_name:
+ *           type: string
+ *          topic_id:
+ *           type: string
+ *          score:
+ *           type: number
+ *
+ *    GetQuizSummaryResponse:
+ *          $ref: "#/components/schemas/GetQuizSummaryModel"
+ *
+ *    GetAllQuizSummaryResponse:
+ *        type: array
+ *        items:
+ *          $ref: "#/components/schemas/GetQuizSummaryModel"
+ *
  */
