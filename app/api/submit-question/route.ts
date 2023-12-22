@@ -6,6 +6,31 @@ import { auth } from "@/src/auth/auth";
 import { ObjectId } from "mongodb";
 import { NextRequest } from "next/server";
 
+/**
+ * @swagger
+ * /api/submit-question:
+ *   post:
+ *     tags: [Questions]
+ *     description: Submit answer and return message
+ *     requestBody:
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: "#/components/schemas/SubmitQuestionPayload"
+ *
+ *     responses:
+ *        "200":
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: "#/components/schemas/SubmitQuestionResponse"
+ *        "400":
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: "#/components/schemas/GenericErrorModel"
+ */
+
 export async function POST(request: NextRequest) {
   let payload: SubmitQuestionRequestSchemaT;
   try {
