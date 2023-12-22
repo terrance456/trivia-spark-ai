@@ -24,11 +24,11 @@ jobs:
       - name: Add env file
         run: |
           touch .env.production
-          echo AUTH_GOOGLE_ID=null >> .env.production
-          echo AUTH_GOOGLE_SECRET=null >> .env.production
-          echo AUTH_SECRET=null >> .env.production 
-          echo MONGODB_AUTH=null >> .env.production
-          echo OPENAI_MODEL_VERSION=null >> .env.production
+          echo AUTH_GOOGLE_ID="null" >> .env.production
+          echo AUTH_GOOGLE_SECRET="null" >> .env.production
+          echo AUTH_SECRET="null" >> .env.production 
+          echo MONGODB_AUTH="null" >> .env.production
+          echo OPENAI_MODEL_VERSION="null" >> .env.production
           cat .env.production
 
       - name: Npm run Build
