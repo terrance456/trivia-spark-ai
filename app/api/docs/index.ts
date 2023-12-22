@@ -81,7 +81,7 @@
  *       type: object
  *       properties:
  *          success:
- *            type:
+ *            type: string
  *
  *    GetOngoingSessionResponse:
  *       type: array
