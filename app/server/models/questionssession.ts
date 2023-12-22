@@ -12,3 +12,12 @@ export interface QuestionsSession {
   question: Question;
   answers: Array<Answer>;
 }
+
+export interface OngoingSessionDetails {
+  question_id: string;
+  topic_id: string;
+  session_id: string;
+  topic_name: string;
+  no_of_question: number;
+  started_at: number;
+}

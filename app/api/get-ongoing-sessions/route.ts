@@ -57,6 +57,9 @@ export async function GET() {
         question_id: v.questions[0].question_id,
         session_id: v._id,
         topic_id: v.topic_id,
+        topic_name: v.topic_name,
+        no_of_question: v.questions.length,
+        started_at: v.started_at,
       }))
     );
   } catch {

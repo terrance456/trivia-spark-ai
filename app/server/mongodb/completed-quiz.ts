@@ -2,7 +2,7 @@ import { WithId } from "mongodb";
 import { QuestionsSessionDB, SessionQuestionList } from "../models/questionssessiondb";
 
 export function formatCompletedQuiz(data: WithId<QuestionsSessionDB>, completed_at: number) {
-  const { questions, started_at, topic_name, topic_id } = data;
+  const { questions, started_at, topic_name, topic_id, user_id } = data;
   const formattedQuestions = questions.map(({ completed, ...item }: SessionQuestionList) => ({
     ...item,
   }));
@@ -21,5 +21,6 @@ export function formatCompletedQuiz(data: WithId<QuestionsSessionDB>, completed_
     topic_name,
     topic_id,
     score,
+    user_id,
   };
 }
