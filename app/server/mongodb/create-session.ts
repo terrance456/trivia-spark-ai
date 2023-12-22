@@ -1,4 +1,3 @@
-import { auth } from "@/src/auth/auth";
 import { mongoClient } from "./connection";
 import { QuestionsSessionDB, SessionQuestionList } from "../models/questionssessiondb";
 import { QuestionDB } from "../models/questiondb";
@@ -7,9 +6,7 @@ import { AnswerDB } from "../models/answerdb";
 import { TopicDB } from "../models/topicdb";
 import { QuestionsSession } from "../models/questionssession";
 
-export async function generateQuestionSession(topic: TopicDB): Promise<QuestionsSession> {
-  const userEmail: string = (await auth())?.user?.email as string;
-
+export async function generateQuestionSession(topic: TopicDB, userEmail: string): Promise<QuestionsSession> {
   const questions = await mongoClient.db("trivia-spark-ai").collection<QuestionDB>("Questions").find({ topic_id: topic._id }).toArray();
   const answers: Array<AnswerDB> = [];
   const answersPromise: Array<Promise<WithId<AnswerDB>[]>> = [];
