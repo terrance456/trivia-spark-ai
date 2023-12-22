@@ -1,19 +1,15 @@
 import { ObjectId } from "mongodb";
+import { SessionQuestionList } from "./questionssessiondb";
 
-export interface QuestionsWithAnswers {
-  question_id: string;
-  question_title: string;
-  actual_answer: { id: ObjectId; title: string };
-  user_answer: { id: ObjectId; title: string };
-}
+export type FinalSummaryQuestionAnswer = Omit<SessionQuestionList, "completed">;
 
 export interface SummaryDB {
   _id: ObjectId;
+  questions: Array<FinalSummaryQuestionAnswer>;
   started_at: number;
-  ended_at: number;
-  question_with_answers: Array<QuestionsWithAnswers>;
-  topic_id: ObjectId;
+  completed_at: number;
   topic_name: string;
+  topic_id: string;
+  score: number;
   user_id: string;
-  created_at: number;
 }
