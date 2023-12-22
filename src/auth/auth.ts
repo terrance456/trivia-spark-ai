@@ -4,12 +4,13 @@ import GoogleProvider from "next-auth/providers/google";
 
 export const authConfig = {
   providers: [GoogleProvider],
+  secret: process.env.AUTH_SECRET,
+  session: { strategy: "jwt", maxAge: 4 * 60 * 60 },
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
       const redirectUrl = new URL("/signin", nextUrl.origin);
       redirectUrl.searchParams.append("callbackUrl", nextUrl.href);
-
       if (!isLoggedIn) {
         return Response.redirect(redirectUrl);
       }
