@@ -1,10 +1,10 @@
 import OpenAI from "openai";
 
-export const openaiHandler: OpenAI = new OpenAI({ apiKey: process.env.OPENAI_KEY });
+export const openaiHandler: OpenAI = new OpenAI({ apiKey: process.env.OPENAI_KEY || "" });
 
 export async function generateGPTQuestions(quantity: number = 5, topic: string) {
   const gptResponse: OpenAI.Chat.Completions.ChatCompletion = await openaiHandler.chat.completions.create({
-    model: process.env.OPENAI_MODEL_VERSION as string,
+    model: (process.env.OPENAI_MODEL_VERSION as string) || "",
     messages: [
       {
         role: "user",
