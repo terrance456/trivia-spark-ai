@@ -21,5 +21,11 @@ jobs:
       - name: Npm install
         run: npm ci
 
+      - name: Add env file
+        run: |
+          touch .env.production
+          echo MONGODB_AUTH=${{ secrets.MONGODB_AUTH }} >> .env.production
+          cat .env.production
+
       - name: Npm run Build
         run: npm run build
