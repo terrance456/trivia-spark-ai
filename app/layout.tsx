@@ -3,8 +3,9 @@ import { Inter as FontSans } from "next/font/google";
 import "@/src/styles/globals.scss";
 import Providers from "@/src/contexts/Providers";
 import { cn } from "@/lib/utils";
+import { NextFontWithVariable } from "next/dist/compiled/@next/font";
 
-export const fontSans = FontSans({
+const fontSans: NextFontWithVariable = FontSans({
   subsets: ["latin"],
   variable: "--font-sans",
 });
