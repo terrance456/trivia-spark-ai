@@ -4,6 +4,7 @@ import "@/src/styles/globals.scss";
 import Providers from "@/src/contexts/Providers";
 import { cn } from "@/lib/utils";
 import { NextFontWithVariable } from "next/dist/compiled/@next/font";
+import Nav from "@/src/components/Nav/Nav";
 
 const fontSans: NextFontWithVariable = FontSans({
   subsets: ["latin"],
@@ -19,7 +20,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={cn("min-h-screen bg-background font-sans antialiased", fontSans.variable)}>
-        <Providers>{children}</Providers>
+        <Providers>
+          <Nav />
+          {children}
+        </Providers>
       </body>
     </html>
   );
