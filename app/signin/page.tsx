@@ -1,15 +1,11 @@
-"use client";
+import LoginCard from "@/src/components/LoginCard/LoginCard";
 import React from "react";
-import { signIn } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
 
-const SignInPage: React.FC = () => {
-  const searchParams = useSearchParams();
-
+const SignInPage: React.FC = async () => {
   return (
-    <div>
-      <button onClick={() => signIn("google", { callbackUrl: (searchParams.get("callbackUrl") as string) || "/" })}>SignIn with google</button>
-    </div>
+    <section className="sm:container h-full flex justify-center items-center">
+      <LoginCard />
+    </section>
   );
 };
 
