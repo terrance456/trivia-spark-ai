@@ -32,7 +32,7 @@
  *         answer_title:
  *           type: string
  *
- *    GenerateQuestionResponse:
+ *    GetQuestionResponse:
  *      type: object
  *      properties:
  *          _id:
@@ -49,11 +49,25 @@
  *            type: string
  *          question:
  *            $ref: "#/components/schemas/Question"
- *          asnwers:
+ *          answers:
  *            type: array
  *            items:
  *              type: object
  *              $ref: "#/components/schemas/Answer"
+ *
+ *    GenerateQuestionResponse:
+ *      type: object
+ *      properties:
+ *          _id:
+ *            type: string
+ *          started_at:
+ *            type: integer
+ *          topic_name:
+ *            type: string
+ *          topic_id:
+ *            type: string
+ *          question_id:
+ *            type: string
  *
  *    GetQuestionPayload:
  *       type: object
