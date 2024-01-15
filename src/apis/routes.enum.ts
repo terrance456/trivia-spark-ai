@@ -1,3 +1,9 @@
 export enum ApiRoutes {
-  verify = "/verify",
+  completeQuiz = "/api/complete-quiz",
+  getAllQuizSummary = "/api/summary/get-all-quiz-summary",
+  getQuizSummary = "/api/summary/get-quiz-summary/{completion_id}",
+  generateQuestion = "/api/generate-questions",
+  getQuestion = "/api/get-question",
+  submitQuestion = "/api/submit-question",
+  getOngoingSession = "/api/get-ongoing-sessions",
 }
