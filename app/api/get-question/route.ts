@@ -22,7 +22,7 @@ import { NextRequest } from "next/server";
  *          content:
  *            application/json:
  *              schema:
- *                $ref: "#/components/schemas/GenerateQuestionResponse"
+ *                $ref: "#/components/schemas/GetQuestionResponse"
  *        "400":
  *          content:
  *            application/json:

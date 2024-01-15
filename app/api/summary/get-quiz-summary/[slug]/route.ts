@@ -34,8 +34,6 @@ export async function GET(_: Request, { params }: { params: { slug: string } }) 
   const completion_id: string = params.slug;
   const parsedPayload = getQuizSummarySchema.safeParse({ completion_id });
 
-  console.log(completion_id);
-
   if (!parsedPayload.success) {
     return Response.json({ message: "Invalid request payload" }, { status: 400 });
   }
