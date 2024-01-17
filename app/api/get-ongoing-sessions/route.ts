@@ -64,6 +64,6 @@ export async function GET() {
     );
   } catch {
     await mongoClient.close();
-    return Response.json({ message: "Failed to ongoing session" }, { status: 500 });
+    return Response.json({ message: "Failed to fetch ongoing session" }, { status: 500 });
   }
 }

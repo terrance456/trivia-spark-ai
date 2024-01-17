@@ -1,6 +1,7 @@
 import React from "react";
 import LoadingTexts from "@/src/assets/json/loading-texts.json";
 import { Progress } from "../ui/progress";
+import { cn } from "@/lib/utils";
 
 const AiLoader: React.FC = () => {
   const loadingTexts = React.useMemo(() => LoadingTexts.sort((a, b) => Math.random() - 0.5), []);
@@ -35,7 +36,7 @@ const AiLoader: React.FC = () => {
   }, []);
 
   return (
-    <div className="fixed top-[78px] bottom-0 left-0 right-0 flex items-center justify-center bg-background z-10">
+    <div className={cn("fixed top-[78px] bottom-0 left-0 right-0 flex items-center justify-center bg-background z-10", { "top-0": window.scrollY > 0 })}>
       <div className="max-w-[80%] flex justify-center items-center relative">
         <Progress value={progress} className="mb-5 w-[700px] max-w-[100%]" />
         {loadingTexts[loadTextIndex] && <p className="text-center absolute top-[110%]"> {loadingTexts[loadTextIndex]}</p>}
