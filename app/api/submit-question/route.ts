@@ -1,9 +1,9 @@
 import { Answer } from "@/app/server/models/answer";
 import { QuestionsSessionDB, SessionQuestionList } from "@/app/server/models/questionssessiondb";
 import { submitQuestionRequestSchema, SubmitQuestionRequestSchemaT } from "@/app/server/models/requests/submit-question";
-import { mongoClient } from "@/app/server/mongodb/connection";
+import { getMongoClient } from "@/app/server/mongodb/connection";
 import { auth } from "@/src/auth/auth";
-import { ObjectId } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 import { NextRequest } from "next/server";
 
 /**
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    await mongoClient.connect();
+    const mongoClient: MongoClient = await getMongoClient();
     const session = await mongoClient
       .db("trivia-spark-ai")
       .collection("QuestionsSessions")
@@ -88,10 +88,8 @@ export async function POST(request: NextRequest) {
     } catch {
       return Response.json({ message: "Answer updatation failed, please try again later" }, { status: 500 });
     }
-    await mongoClient.close();
     return Response.json({ success: true });
   } catch {
-    await mongoClient.close();
     return Response.json({ message: "Failed to fetch question" }, { status: 500 });
   }
 }

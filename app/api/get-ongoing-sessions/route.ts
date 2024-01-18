@@ -1,7 +1,7 @@
 import { QuestionsSessionDB } from "@/app/server/models/questionssessiondb";
-import { mongoClient } from "@/app/server/mongodb/connection";
+import { getMongoClient } from "@/app/server/mongodb/connection";
 import { auth } from "@/src/auth/auth";
-import { WithId } from "mongodb";
+import { MongoClient, WithId } from "mongodb";
 
 /**
  * @swagger
@@ -26,7 +26,7 @@ import { WithId } from "mongodb";
 export async function GET() {
   try {
     const user = await auth();
-    await mongoClient.connect();
+    const mongoClient: MongoClient = await getMongoClient();
     const session: Array<WithId<QuestionsSessionDB>> = await mongoClient.db("trivia-spark-ai").collection("QuestionsSessions").find<QuestionsSessionDB>({ user_id: user?.user?.email }).toArray();
 
     if (session.length < 1) {
@@ -51,7 +51,6 @@ export async function GET() {
         .deleteMany({ _id: { $in: removeSession.map((v: WithId<QuestionsSessionDB>) => v._id) } });
     }
 
-    await mongoClient.close();
     return Response.json(
       filterSession.map((v: WithId<QuestionsSessionDB>) => ({
         question_id: v.questions[0].question_id,
@@ -63,7 +62,6 @@ export async function GET() {
       }))
     );
   } catch {
-    await mongoClient.close();
     return Response.json({ message: "Failed to fetch ongoing session" }, { status: 500 });
   }
 }

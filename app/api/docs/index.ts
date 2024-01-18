@@ -163,6 +163,18 @@
  *          score:
  *           type: number
  *
+ *    GetSummaryListModel:
+ *      type: object
+ *      properties:
+ *          _id:
+ *           type: string
+ *          no_of_question:
+ *           type: number
+ *          topic_name:
+ *           type: string
+ *          score:
+ *           type: number
+ *
  *    GetQuizSummaryResponse:
  *          $ref: "#/components/schemas/GetQuizSummaryModel"
  *
@@ -170,5 +182,10 @@
  *        type: array
  *        items:
  *          $ref: "#/components/schemas/GetQuizSummaryModel"
+ *
+ *    GetSummaryListResponse:
+ *        type: array
+ *        items:
+ *          $ref: "#/components/schemas/GetSummaryListModel"
  *
  */

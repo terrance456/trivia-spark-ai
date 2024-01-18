@@ -1,9 +1,9 @@
 import { QuestionsSessionDB, SessionQuestionList } from "@/app/server/models/questionssessiondb";
 import { CompleteQuizRequestSchemaT, completeQuizRequestSchema } from "@/app/server/models/requests/complete-quiz";
 import { formatCompletedQuiz } from "@/app/server/mongodb/completed-quiz";
-import { mongoClient } from "@/app/server/mongodb/connection";
+import { getMongoClient } from "@/app/server/mongodb/connection";
 import { auth } from "@/src/auth/auth";
-import { InsertOneResult, ObjectId } from "mongodb";
+import { InsertOneResult, MongoClient, ObjectId } from "mongodb";
 import { NextRequest } from "next/server";
 
 /**
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    await mongoClient.connect();
+    const mongoClient: MongoClient = await getMongoClient();
     const session = await mongoClient
       .db("trivia-spark-ai")
       .collection("QuestionsSessions")
@@ -72,10 +72,8 @@ export async function POST(request: NextRequest) {
     const formattedQuizSummary = formatCompletedQuiz(session, completedTime);
     const res: InsertOneResult<Document> = await mongoClient.db("trivia-spark-ai").collection("Summary").insertOne(formattedQuizSummary);
     await mongoClient.db("trivia-spark-ai").collection("QuestionsSessions").deleteOne({ _id: session._id });
-    await mongoClient.close();
     return Response.json({ completed_id: res.insertedId });
   } catch {
-    await mongoClient.close();
     return Response.json({ message: "Failed to complete quiz, please try again" }, { status: 500 });
   }
 }

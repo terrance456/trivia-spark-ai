@@ -1,7 +1,7 @@
 import { SummaryDB } from "@/app/server/models/summarydb";
-import { mongoClient } from "@/app/server/mongodb/connection";
+import { getMongoClient } from "@/app/server/mongodb/connection";
 import { auth } from "@/src/auth/auth";
-import { WithId } from "mongodb";
+import { MongoClient, WithId } from "mongodb";
 
 /**
  * @swagger
@@ -25,13 +25,12 @@ import { WithId } from "mongodb";
 export async function GET() {
   try {
     const user = await auth();
-    await mongoClient.connect();
+    const mongoClient: MongoClient = await getMongoClient();
     const summaryList: Array<WithId<SummaryDB>> = await mongoClient.db("trivia-spark-ai").collection("Summary").find<SummaryDB>({ user_id: user?.user?.email }).toArray();
     if (summaryList.length < 1) {
       return Response.json([]);
     }
 
-    await mongoClient.close();
     return Response.json(
       summaryList.map((item: SummaryDB) => ({
         _id: item._id,
@@ -41,7 +40,6 @@ export async function GET() {
       }))
     );
   } catch (e) {
-    await mongoClient.close();
     return Response.json({ message: "Failed to retrive quiz summary, please try again later" }, { status: 500 });
   }
 }
