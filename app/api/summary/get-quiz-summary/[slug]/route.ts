@@ -40,11 +40,12 @@ export async function GET(_: Request, { params }: { params: { slug: string } }) 
 
   try {
     const user = await auth();
+    await mongoClient.connect();
     const summary: WithId<SummaryDB> | null = await mongoClient.db("trivia-spark-ai").collection("Summary").findOne<SummaryDB>({ user_id: user?.user?.email });
     if (!summary) {
       return Response.json({ message: "Summary details for this quiz doesnt exist" }, { status: 400 });
     }
-
+    await mongoClient.close();
     return Response.json({
       _id: summary._id,
       questions: summary.questions,
@@ -55,6 +56,7 @@ export async function GET(_: Request, { params }: { params: { slug: string } }) 
       score: summary.score,
     });
   } catch {
+    await mongoClient.close();
     return Response.json({ message: "Failed to retrive quiz summary, please try again later" }, { status: 500 });
   }
 }
