@@ -19,7 +19,7 @@ const InfoModal: React.FC<InfoModalProps> = ({ header, content, ...props }: Info
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="flex justify-center">{<ExclamationTriangleIcon className="text-red-600 h-8 w-8" />}</div>
-          <p className="text-muted-foreground text-center sm:text-start">{content || "We apologize for the inconvenience. Please try again in awhile. Thank you for your patience"}.</p>
+          <p className="text-muted-foreground text-center sm:text-start">{content || "We apologize for the inconvenience. Please try again in awhile. Thank you for your patience."}</p>
         </div>
         <DialogFooter className="sm:justify-end">
           <DialogClose asChild>
