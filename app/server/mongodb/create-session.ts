@@ -1,11 +1,10 @@
-import { mongoClient } from "./connection";
 import { QuestionsSessionDB, SessionQuestionList } from "../models/questionssessiondb";
 import { QuestionDB } from "../models/questiondb";
-import { ObjectId, WithId } from "mongodb";
+import { MongoClient, ObjectId, WithId } from "mongodb";
 import { AnswerDB } from "../models/answerdb";
 import { TopicDB } from "../models/topicdb";
 
-export async function generateQuestionSession(topic: TopicDB, userEmail: string) {
+export async function generateQuestionSession(topic: TopicDB, userEmail: string, mongoClient: MongoClient) {
   const questions = await mongoClient.db("trivia-spark-ai").collection<QuestionDB>("Questions").find({ topic_id: topic._id }).toArray();
   const answers: Array<AnswerDB> = [];
   const answersPromise: Array<Promise<WithId<AnswerDB>[]>> = [];

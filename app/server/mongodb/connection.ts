@@ -1,13 +1,11 @@
 import { MongoClient, ServerApiVersion } from "mongodb";
 
-export let mongoClient: MongoClient | null;
-
 export const getMongoClient = async () => {
-  if (mongoClient) {
+  if ((global as any).mongoClient) {
     console.log("Cached connection");
-    return mongoClient;
+    return (global as any).mongoClient;
   }
-  mongoClient = new MongoClient(process.env.MONGODB_AUTH as string, {
+  (global as any).mongoClient = new MongoClient(process.env.MONGODB_AUTH as string, {
     serverApi: {
       version: ServerApiVersion.v1,
       strict: true,
@@ -15,11 +13,11 @@ export const getMongoClient = async () => {
     },
   });
   try {
-    await mongoClient.connect();
+    await (global as any).mongoClient.connect();
     console.log("DB connected");
-    return mongoClient as MongoClient;
+    return (global as any).mongoClient as MongoClient;
   } catch {
-    mongoClient = null;
+    (global as any).mongoClient = null;
     console.log("DB Connection failed");
     throw {};
   }

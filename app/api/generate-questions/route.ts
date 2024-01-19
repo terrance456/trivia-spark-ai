@@ -54,16 +54,16 @@ export async function POST(request: Request) {
     // Send new generated questions
     if (!topic) {
       const res = await generateGPTQuestions(parsedPayload.data.no_of_questions, parsedPayload.data.topic);
-      const topicDetails = await insertTopicToDB(parsedPayload.data.topic);
-      const questionsDetails = await insertQuestionToDB(res, topicDetails.insertedId);
-      await insertAnswerToDB(res, questionsDetails.insertedIds, topicDetails.insertedId);
+      const topicDetails = await insertTopicToDB(parsedPayload.data.topic, mongoClient);
+      const questionsDetails = await insertQuestionToDB(res, topicDetails.insertedId, mongoClient);
+      await insertAnswerToDB(res, questionsDetails.insertedIds, topicDetails.insertedId, mongoClient);
       const latestTopic: WithId<TopicDB> | null = await mongoClient.db("trivia-spark-ai").collection("Topics").findOne<TopicDB>({ _id: topicDetails.insertedId });
-      const finalResponse = await generateQuestionSession(latestTopic as TopicDB, userEmail);
+      const finalResponse = await generateQuestionSession(latestTopic as TopicDB, userEmail, mongoClient);
       return Response.json(finalResponse);
     }
 
     // Send availalble questions
-    const finalResponse = await generateQuestionSession(topic as TopicDB, userEmail);
+    const finalResponse = await generateQuestionSession(topic as TopicDB, userEmail, mongoClient);
     return Response.json(finalResponse);
   } catch {
     return Response.json({ message: "Question generation has failed, please try again later" }, { status: 500 });
