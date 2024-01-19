@@ -6,4 +6,5 @@ export enum ApiRoutes {
   getQuestion = "/api/get-question",
   submitQuestion = "/api/submit-question",
   getOngoingSession = "/api/get-ongoing-sessions",
+  getSummaryList = "/api/summary/summary-list",
 }
