@@ -71,6 +71,9 @@ module.exports = {
       fontFamily: {
         sans: ["var(--font-sans)", ...fontFamily.sans],
       },
+      gridTemplateRows: {
+        dashboard: "313px minmax(0, 1fr)",
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],

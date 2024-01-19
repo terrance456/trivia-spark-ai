@@ -1,24 +1,25 @@
-import { ApiRoutes } from "./routes.enum";
 import { generateBaseUrl } from "./baseurl";
+import { ApiRoutes } from "./routes.enum";
 
-export const nextFetch = async (input: ApiRoutes, init: RequestInit = {}, cookie: boolean = true) => {
+export const nextFetch = async <T>(input: ApiRoutes, init: RequestInit = {}, cookie: boolean = true) => {
   let requestInit: RequestInit = { ...init };
 
   if (cookie) {
     const { cookies } = await import("next/headers");
     requestInit = { ...requestInit, headers: { Cookie: cookies().toString(), ...requestInit.headers } };
   }
-  const res = await fetch(generateBaseUrl(input), requestInit);
-
-  if (!res.ok) {
-    throw res;
-  }
+  const res: Response = await fetch(generateBaseUrl(input), requestInit);
+  let result: any = res;
 
   if (isJSONRes(res)) {
-    return await res.json();
+    result = await res.json();
   }
 
-  return res;
+  if (!res.ok) {
+    throw result as Response;
+  }
+
+  return result as T;
 };
 
 const isJSONRes = (res: Response) => {

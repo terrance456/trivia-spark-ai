@@ -1,8 +1,8 @@
 import { getQuizSummarySchema } from "@/app/server/models/requests/get-quiz-summary";
 import { SummaryDB } from "@/app/server/models/summarydb";
-import { mongoClient } from "@/app/server/mongodb/connection";
+import { getMongoClient } from "@/app/server/mongodb/connection";
 import { auth } from "@/src/auth/auth";
-import { WithId } from "mongodb";
+import { MongoClient, WithId } from "mongodb";
 
 /**
  * @swagger
@@ -34,19 +34,17 @@ export async function GET(_: Request, { params }: { params: { slug: string } }) 
   const completion_id: string = params.slug;
   const parsedPayload = getQuizSummarySchema.safeParse({ completion_id });
 
-  console.log(completion_id);
-
   if (!parsedPayload.success) {
     return Response.json({ message: "Invalid request payload" }, { status: 400 });
   }
 
   try {
     const user = await auth();
+    const mongoClient: MongoClient = await getMongoClient();
     const summary: WithId<SummaryDB> | null = await mongoClient.db("trivia-spark-ai").collection("Summary").findOne<SummaryDB>({ user_id: user?.user?.email });
     if (!summary) {
       return Response.json({ message: "Summary details for this quiz doesnt exist" }, { status: 400 });
     }
-
     return Response.json({
       _id: summary._id,
       questions: summary.questions,

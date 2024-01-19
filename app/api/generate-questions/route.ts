@@ -1,11 +1,11 @@
 import { generateGPTQuestions } from "@/app/server/gpt/gpt";
 import { GenerateQuestionsRequestT, generateQuestionRequestSchema } from "@/app/server/models/requests/generate-questions";
 import { TopicDB } from "@/app/server/models/topicdb";
-import { mongoClient } from "@/app/server/mongodb/connection";
+import { getMongoClient } from "@/app/server/mongodb/connection";
 import { generateQuestionSession } from "@/app/server/mongodb/create-session";
 import { insertQuestionToDB, insertTopicToDB, insertAnswerToDB } from "@/app/server/mongodb/format-question-answer";
 import { auth } from "@/src/auth/auth";
-import { WithId } from "mongodb";
+import { MongoClient, WithId } from "mongodb";
 
 /**
  * @swagger
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    await mongoClient.connect();
+    const mongoClient: MongoClient = await getMongoClient();
     const userEmail: string = (await auth())?.user?.email as string;
     // check db for similar questions
     const topic: WithId<TopicDB> | null = await mongoClient.db("trivia-spark-ai").collection("Topics").findOne<TopicDB>({ topic_name: parsedPayload.data.topic.toLocaleLowerCase() });
@@ -54,21 +54,18 @@ export async function POST(request: Request) {
     // Send new generated questions
     if (!topic) {
       const res = await generateGPTQuestions(parsedPayload.data.no_of_questions, parsedPayload.data.topic);
-      const topicDetails = await insertTopicToDB(parsedPayload.data.topic);
-      const questionsDetails = await insertQuestionToDB(res, topicDetails.insertedId);
-      await insertAnswerToDB(res, questionsDetails.insertedIds, topicDetails.insertedId);
+      const topicDetails = await insertTopicToDB(parsedPayload.data.topic, mongoClient);
+      const questionsDetails = await insertQuestionToDB(res, topicDetails.insertedId, mongoClient);
+      await insertAnswerToDB(res, questionsDetails.insertedIds, topicDetails.insertedId, mongoClient);
       const latestTopic: WithId<TopicDB> | null = await mongoClient.db("trivia-spark-ai").collection("Topics").findOne<TopicDB>({ _id: topicDetails.insertedId });
-      const finalResponse = await generateQuestionSession(latestTopic as TopicDB, userEmail);
-      mongoClient.close();
+      const finalResponse = await generateQuestionSession(latestTopic as TopicDB, userEmail, mongoClient);
       return Response.json(finalResponse);
     }
 
     // Send availalble questions
-    const finalResponse = await generateQuestionSession(topic as TopicDB, userEmail);
-    await mongoClient.close();
+    const finalResponse = await generateQuestionSession(topic as TopicDB, userEmail, mongoClient);
     return Response.json(finalResponse);
   } catch {
-    await mongoClient.close();
     return Response.json({ message: "Question generation has failed, please try again later" }, { status: 500 });
   }
 }

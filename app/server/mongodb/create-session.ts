@@ -1,12 +1,10 @@
-import { mongoClient } from "./connection";
 import { QuestionsSessionDB, SessionQuestionList } from "../models/questionssessiondb";
 import { QuestionDB } from "../models/questiondb";
-import { ObjectId, WithId } from "mongodb";
+import { MongoClient, ObjectId, WithId } from "mongodb";
 import { AnswerDB } from "../models/answerdb";
 import { TopicDB } from "../models/topicdb";
-import { QuestionsSession } from "../models/questionssession";
 
-export async function generateQuestionSession(topic: TopicDB, userEmail: string): Promise<QuestionsSession> {
+export async function generateQuestionSession(topic: TopicDB, userEmail: string, mongoClient: MongoClient) {
   const questions = await mongoClient.db("trivia-spark-ai").collection<QuestionDB>("Questions").find({ topic_id: topic._id }).toArray();
   const answers: Array<AnswerDB> = [];
   const answersPromise: Array<Promise<WithId<AnswerDB>[]>> = [];
@@ -40,7 +38,6 @@ export async function generateQuestionSession(topic: TopicDB, userEmail: string)
     user_id: userEmail,
     created_at: Date.now(),
   };
-
   const session = await mongoClient.db("trivia-spark-ai").collection("QuestionsSessions").insertOne(sessionDBDetails);
 
   return {
@@ -48,9 +45,6 @@ export async function generateQuestionSession(topic: TopicDB, userEmail: string)
     started_at: sessionDBDetails.started_at,
     topic_name: sessionDBDetails.topic_name,
     topic_id: sessionDBDetails.topic_id,
-    next_question_id: formattedQuestionAnswers[1]?.question_id || null,
-    prev_question_id: null,
-    question: { _id: formattedQuestionAnswers[0].question_id, title: formattedQuestionAnswers[0].question_title },
-    answers: formattedQuestionAnswers[0].answers,
+    question_id: formattedQuestionAnswers[0].question_id,
   };
 }

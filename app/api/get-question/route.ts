@@ -1,8 +1,8 @@
 import { QuestionsSessionDB, SessionQuestionList } from "@/app/server/models/questionssessiondb";
 import { GetQuestionRequestSchemaT, getQuestionRequestSchema } from "@/app/server/models/requests/get-question";
-import { mongoClient } from "@/app/server/mongodb/connection";
+import { getMongoClient } from "@/app/server/mongodb/connection";
 import { auth } from "@/src/auth/auth";
-import { ObjectId } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 import { NextRequest } from "next/server";
 
 /**
@@ -22,7 +22,7 @@ import { NextRequest } from "next/server";
  *          content:
  *            application/json:
  *              schema:
- *                $ref: "#/components/schemas/GenerateQuestionResponse"
+ *                $ref: "#/components/schemas/GetQuestionResponse"
  *        "400":
  *          content:
  *            application/json:
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    await mongoClient.connect();
+    const mongoClient: MongoClient = await getMongoClient();
     const session = await mongoClient
       .db("trivia-spark-ai")
       .collection("QuestionsSessions")
@@ -73,7 +73,6 @@ export async function POST(request: NextRequest) {
       return Response.json({ message: "Question cant be skipped, follow the order of the quiz" }, { status: 400 });
     }
 
-    await mongoClient.close();
     return Response.json({
       _id: session._id,
       started_at: session.started_at,
@@ -85,7 +84,6 @@ export async function POST(request: NextRequest) {
       answers: currentQuestion.answers,
     });
   } catch {
-    await mongoClient.close();
     return Response.json({ message: "Failed to fetch question" }, { status: 500 });
   }
 }

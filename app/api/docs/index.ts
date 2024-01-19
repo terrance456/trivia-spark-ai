@@ -32,7 +32,7 @@
  *         answer_title:
  *           type: string
  *
- *    GenerateQuestionResponse:
+ *    GetQuestionResponse:
  *      type: object
  *      properties:
  *          _id:
@@ -49,11 +49,25 @@
  *            type: string
  *          question:
  *            $ref: "#/components/schemas/Question"
- *          asnwers:
+ *          answers:
  *            type: array
  *            items:
  *              type: object
  *              $ref: "#/components/schemas/Answer"
+ *
+ *    GenerateQuestionResponse:
+ *      type: object
+ *      properties:
+ *          _id:
+ *            type: string
+ *          started_at:
+ *            type: integer
+ *          topic_name:
+ *            type: string
+ *          topic_id:
+ *            type: string
+ *          question_id:
+ *            type: string
  *
  *    GetQuestionPayload:
  *       type: object
@@ -149,6 +163,18 @@
  *          score:
  *           type: number
  *
+ *    GetSummaryListModel:
+ *      type: object
+ *      properties:
+ *          _id:
+ *           type: string
+ *          no_of_question:
+ *           type: number
+ *          topic_name:
+ *           type: string
+ *          score:
+ *           type: number
+ *
  *    GetQuizSummaryResponse:
  *          $ref: "#/components/schemas/GetQuizSummaryModel"
  *
@@ -156,5 +182,10 @@
  *        type: array
  *        items:
  *          $ref: "#/components/schemas/GetQuizSummaryModel"
+ *
+ *    GetSummaryListResponse:
+ *        type: array
+ *        items:
+ *          $ref: "#/components/schemas/GetSummaryListModel"
  *
  */
