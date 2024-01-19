@@ -18,19 +18,17 @@ interface GenerateQuestionForm {
 }
 
 const QuestionGenerateForm: React.FC = () => {
-  const [isFetching, setIsFetching] = React.useState<boolean>(false);
   const { toggleAiLoader, toggleInfoModal } = useGlobalSettingContext();
   const router = useRouter();
   const {
     handleSubmit,
     register,
-    formState: { errors },
+    formState: { isSubmitting },
     setValue,
   } = useForm<GenerateQuestionForm>({ defaultValues: { noOfQuestions: 4 } });
 
   const onSubmit = async (data: GenerateQuestionForm) => {
     toggleAiLoader(true);
-    setIsFetching(true);
     try {
       const response: GenerateQuestionResponseClient = await nextFetch<GenerateQuestionResponseClient>(ApiRoutes.generateQuestion, { method: "POST", body: JSON.stringify({ topic: data.topics, no_of_questions: data.noOfQuestions }) }, false);
       router.push(`/question?topic_id=${response.topic_id}&session_id=${response._id}&question_id=${response.question_id}`);
@@ -38,7 +36,6 @@ const QuestionGenerateForm: React.FC = () => {
       toggleInfoModal({ open: true, header: "Unexpected error", content: e.message });
     } finally {
       toggleAiLoader(false);
-      setIsFetching(false);
     }
   };
 
@@ -74,7 +71,7 @@ const QuestionGenerateForm: React.FC = () => {
         </form>
       </CardContent>
       <CardFooter>
-        <Button className="w-full" type="submit" form="generate-question-form" disabled={isFetching}>
+        <Button className="w-full" type="submit" form="generate-question-form" disabled={isSubmitting}>
           <CheckCircledIcon className="mr-2" /> Quiz now!
         </Button>
       </CardFooter>

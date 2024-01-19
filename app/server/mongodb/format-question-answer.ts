@@ -3,8 +3,8 @@ import { GPTQuestionDetails, GPTQuestionResponse } from "../models/gpt-response"
 import { QuestionDB } from "../models/questiondb";
 import { AnswerDB } from "../models/answerdb";
 
-export async function insertTopicToDB(topic: string, mongoClient: MongoClient) {
-  return mongoClient.db("trivia-spark-ai").collection("Topics").insertOne({ topic_name: topic.toLocaleLowerCase(), created_at: Date.now() });
+export async function insertTopicToDB(topic: string, no_of_question: number, mongoClient: MongoClient) {
+  return mongoClient.db("trivia-spark-ai").collection("Topics").insertOne({ topic_name: topic.toLocaleLowerCase(), created_at: Date.now(), no_of_question, counts: 1 });
 }
 
 export async function insertQuestionToDB(data: GPTQuestionResponse, topic_id: ObjectId, mongoClient: MongoClient) {
@@ -17,4 +17,11 @@ export async function insertAnswerToDB(data: GPTQuestionResponse, question_ids: 
     value.answers.map((answer: string, answerIndex: number) => ({ answer_title: answer, topic_id, created_at: Date.now(), question_id: question_ids[String(questionIndex)], metadata: { index: String(answerIndex) } }))
   );
   return mongoClient.db("trivia-spark-ai").collection("Answers").insertMany(newAnswers);
+}
+
+export async function updateTopicCount(topic_id: ObjectId, mongoClient: MongoClient) {
+  return mongoClient
+    .db("trivia-spark-ai")
+    .collection("Topics")
+    .updateOne({ _id: topic_id }, { $inc: { counts: 1 } });
 }

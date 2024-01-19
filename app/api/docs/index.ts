@@ -175,6 +175,14 @@
  *          score:
  *           type: number
  *
+ *    PopularTopicModel:
+ *      type: object
+ *      properties:
+ *          topic_name:
+ *           type: string
+ *          no_of_question:
+ *           type: number
+ *
  *    GetQuizSummaryResponse:
  *          $ref: "#/components/schemas/GetQuizSummaryModel"
  *
@@ -187,5 +195,9 @@
  *        type: array
  *        items:
  *          $ref: "#/components/schemas/GetSummaryListModel"
+ *    GetPopularTopicModelResponse:
+ *        type: array
+ *        items:
+ *          $ref: "#/components/schemas/PopularTopicModel"
  *
  */
