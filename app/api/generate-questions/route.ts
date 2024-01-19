@@ -1,9 +1,11 @@
 import { generateGPTQuestions } from "@/app/server/gpt/gpt";
+import { validateGPTOutput } from "@/app/server/gpt/validate";
+import { ProfanityT } from "@/app/server/models/profanity";
 import { GenerateQuestionsRequestT, generateQuestionRequestSchema } from "@/app/server/models/requests/generate-questions";
 import { TopicDB } from "@/app/server/models/topicdb";
 import { getMongoClient } from "@/app/server/mongodb/connection";
 import { generateQuestionSession } from "@/app/server/mongodb/create-session";
-import { insertQuestionToDB, insertTopicToDB, insertAnswerToDB } from "@/app/server/mongodb/format-question-answer";
+import { insertQuestionToDB, insertTopicToDB, insertAnswerToDB, updateTopicCount } from "@/app/server/mongodb/format-question-answer";
 import { auth } from "@/src/auth/auth";
 import { MongoClient, WithId } from "mongodb";
 
@@ -42,28 +44,43 @@ export async function POST(request: Request) {
   const parsedPayload = generateQuestionRequestSchema.safeParse(payload);
 
   if (!parsedPayload.success) {
-    return Response.json({ message: "Invalid request payload" }, { status: 400 });
+    return Response.json({ message: parsedPayload.error.message }, { status: 400 });
   }
 
+  // porfanity checker
+  try {
+    const response: Response = await fetch(`https://api.api-ninjas.com/v1/profanityfilter?text=${parsedPayload.data.topic}`, { headers: { "X-Api-Key": process.env.PROFANITY_APIKEY as string } });
+    const jsonRes: ProfanityT = await response.json();
+    if (jsonRes.has_profanity) {
+      return Response.json({ message: "No profanity words are allowed, be creative 😁" }, { status: 400 });
+    }
+  } catch {
+    return Response.json({ message: "Question generation has failed, please try again later" }, { status: 500 });
+  }
+
+  // question generation
   try {
     const mongoClient: MongoClient = await getMongoClient();
     const userEmail: string = (await auth())?.user?.email as string;
-    // check db for similar questions
-    const topic: WithId<TopicDB> | null = await mongoClient.db("trivia-spark-ai").collection("Topics").findOne<TopicDB>({ topic_name: parsedPayload.data.topic.toLocaleLowerCase() });
+    const topic: WithId<TopicDB> | null = await mongoClient.db("trivia-spark-ai").collection("Topics").findOne<TopicDB>({ topic_name: parsedPayload.data.topic.toLocaleLowerCase(), no_of_question: parsedPayload.data.no_of_questions });
 
-    // Send new generated questions
-    if (!topic) {
-      const res = await generateGPTQuestions(parsedPayload.data.no_of_questions, parsedPayload.data.topic);
-      const topicDetails = await insertTopicToDB(parsedPayload.data.topic, mongoClient);
-      const questionsDetails = await insertQuestionToDB(res, topicDetails.insertedId, mongoClient);
-      await insertAnswerToDB(res, questionsDetails.insertedIds, topicDetails.insertedId, mongoClient);
-      const latestTopic: WithId<TopicDB> | null = await mongoClient.db("trivia-spark-ai").collection("Topics").findOne<TopicDB>({ _id: topicDetails.insertedId });
-      const finalResponse = await generateQuestionSession(latestTopic as TopicDB, userEmail, mongoClient);
+    // Send availalble questions
+    if (topic) {
+      const finalResponse = await generateQuestionSession(topic, userEmail, mongoClient);
+      await updateTopicCount(topic._id, mongoClient);
       return Response.json(finalResponse);
     }
 
-    // Send availalble questions
-    const finalResponse = await generateQuestionSession(topic as TopicDB, userEmail, mongoClient);
+    // Send new generated questions
+    const res = await generateGPTQuestions(parsedPayload.data.no_of_questions, parsedPayload.data.topic);
+    if (!validateGPTOutput(res)) {
+      return Response.json({ message: "GPT generation has failed formating question, please try again later" }, { status: 500 });
+    }
+    const topicDetails = await insertTopicToDB(parsedPayload.data.topic, parsedPayload.data.no_of_questions, mongoClient);
+    const questionsDetails = await insertQuestionToDB(res, topicDetails.insertedId, mongoClient);
+    await insertAnswerToDB(res, questionsDetails.insertedIds, topicDetails.insertedId, mongoClient);
+    const latestTopic: WithId<TopicDB> | null = await mongoClient.db("trivia-spark-ai").collection("Topics").findOne<TopicDB>({ _id: topicDetails.insertedId });
+    const finalResponse = await generateQuestionSession(latestTopic as TopicDB, userEmail, mongoClient);
     return Response.json(finalResponse);
   } catch {
     return Response.json({ message: "Question generation has failed, please try again later" }, { status: 500 });
