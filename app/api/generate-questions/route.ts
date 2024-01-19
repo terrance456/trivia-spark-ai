@@ -44,7 +44,7 @@ export async function POST(request: Request) {
   const parsedPayload = generateQuestionRequestSchema.safeParse(payload);
 
   if (!parsedPayload.success) {
-    return Response.json({ message: parsedPayload.error.message }, { status: 400 });
+    return Response.json({ message: parsedPayload.error.issues[0].message }, { status: 400 });
   }
 
   // porfanity checker
