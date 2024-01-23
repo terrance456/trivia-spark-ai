@@ -1,15 +1,15 @@
 import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/src/components/ui/card";
 import { nextFetch } from "@/src/apis/fetch";
-import Link from "next/link";
 import { OngoingSessionResponseClient } from "@/src/apis/models/response/OngoingSessionResponseClient";
 import { ApiRoutes } from "@/src/apis/routes.enum";
 import { TimerIcon } from "@radix-ui/react-icons";
 import { cn } from "@/lib/utils";
 import Banner from "../../Banner/Banner";
+import ClientLink from "../../ClientLink/ClientLink";
 
 export const OngoingQuizCard: React.FC = async () => {
-  const response: Array<OngoingSessionResponseClient> = await nextFetch(ApiRoutes.getOngoingSession, { next: { revalidate: 0 } });
+  const response: Array<OngoingSessionResponseClient> = await nextFetch(ApiRoutes.getOngoingSession);
 
   const genereteUrl = (value: OngoingSessionResponseClient) => {
     return `/question?topic_id=${value.topic_id}&session_id=${value.session_id}&question_id=${value.question_id}`;
@@ -40,10 +40,10 @@ export const OngoingQuizCard: React.FC = async () => {
             <ul className="flex gap-y-4 flex-col">
               {response.map((v: OngoingSessionResponseClient) => (
                 <li key={v.session_id}>
-                  <Link href={genereteUrl(v)} className="flex justify-between bg-slate-50 dark:bg-slate-800 p-3 rounded truncate">
+                  <ClientLink enableRefresh href={genereteUrl(v)} className="flex justify-between bg-slate-50 dark:bg-slate-800 p-3 rounded truncate">
                     <span className="capitalize text-sm text-slate-600 dark:text-slate-300 block w-[70%] truncate">{v.topic_name}</span>
                     <span className="text-accent-foreground flex items-center text-slate-600 dark:text-slate-300">{renderTime(v.started_at)}</span>
-                  </Link>
+                  </ClientLink>
                 </li>
               ))}
             </ul>
