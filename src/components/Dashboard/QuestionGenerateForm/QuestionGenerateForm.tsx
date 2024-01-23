@@ -6,38 +6,21 @@ import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
 import { CheckCircledIcon } from "@radix-ui/react-icons";
 import { useForm } from "react-hook-form";
-import { nextFetch } from "@/src/apis/fetch";
-import { ApiRoutes } from "@/src/apis/routes.enum";
 import { useGlobalSettingContext } from "@/src/contexts/GlobalSettingContext";
-import { useRouter } from "next/navigation";
-import { GenerateQuestionResponseClient } from "@/src/apis/models/response/GenerateQuestionResponseClient";
 
-interface GenerateQuestionForm {
+export interface GenerateQuestionForm {
   topics: string;
   noOfQuestions: number;
 }
 
 const QuestionGenerateForm: React.FC = () => {
-  const { toggleAiLoader, toggleInfoModal } = useGlobalSettingContext();
-  const router = useRouter();
+  const { generateQuestionHandler } = useGlobalSettingContext();
   const {
     handleSubmit,
     register,
     formState: { isSubmitting },
     setValue,
   } = useForm<GenerateQuestionForm>({ defaultValues: { noOfQuestions: 4 } });
-
-  const onSubmit = async (data: GenerateQuestionForm) => {
-    toggleAiLoader(true);
-    try {
-      const response: GenerateQuestionResponseClient = await nextFetch<GenerateQuestionResponseClient>(ApiRoutes.generateQuestion, { method: "POST", body: JSON.stringify({ topic: data.topics, no_of_questions: data.noOfQuestions }) }, false);
-      router.push(`/question?topic_id=${response.topic_id}&session_id=${response._id}&question_id=${response.question_id}`);
-    } catch (e: any) {
-      toggleInfoModal({ open: true, header: "Unexpected error", content: e.message });
-    } finally {
-      toggleAiLoader(false);
-    }
-  };
 
   const onChangeNoOfQuestions = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.valueAsNumber > 10) {
@@ -57,7 +40,7 @@ const QuestionGenerateForm: React.FC = () => {
         <CardDescription>Precisely tell AI what you wanna be challenged on!</CardDescription>
       </CardHeader>
       <CardContent>
-        <form id="generate-question-form" onSubmit={handleSubmit(onSubmit)}>
+        <form id="generate-question-form" onSubmit={handleSubmit(generateQuestionHandler)}>
           <div className="grid w-full items-center gap-4">
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="topics">Topics </Label>

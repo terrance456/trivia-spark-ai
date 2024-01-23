@@ -3,13 +3,19 @@ import LoadingTexts from "@/src/assets/json/loading-texts.json";
 import { Progress } from "../ui/progress";
 import { cn } from "@/lib/utils";
 
-const AiLoader: React.FC = () => {
-  const loadingTexts = React.useMemo(() => LoadingTexts.sort((a, b) => Math.random() - 0.5), []);
+export interface AiLoaderProps {
+  isDone: boolean;
+  onEndCallback?: () => void;
+}
+
+const AiLoader: React.FC<AiLoaderProps> = ({ isDone, onEndCallback }) => {
+  const loadingTexts = React.useMemo(() => LoadingTexts.sort(() => Math.random() - 0.5), []);
   const [loadTextIndex, setLoadTextIndex] = React.useState(0);
   const [progress, setProgress] = React.useState<number>(0);
 
   React.useEffect(() => {
     document.body.style.overflow = "hidden";
+    let endLoaderId: NodeJS.Timeout;
     const textIntevalId: NodeJS.Timeout = setInterval(() => {
       setLoadTextIndex((prevTextLoadIndex: number) => {
         if (prevTextLoadIndex === 9) {
@@ -18,9 +24,13 @@ const AiLoader: React.FC = () => {
         return prevTextLoadIndex + 1;
       });
     }, 3500);
-
     const progressInterval: NodeJS.Timeout = setInterval(() => {
       setProgress((prevProgress: number) => {
+        if (isDone && onEndCallback) {
+          endLoaderId = setTimeout(onEndCallback, 900);
+          return 100;
+        }
+
         if (prevProgress > 100) {
           return 0;
         }
@@ -31,9 +41,10 @@ const AiLoader: React.FC = () => {
     return () => {
       clearInterval(textIntevalId);
       clearInterval(progressInterval);
+      clearTimeout(endLoaderId);
       document.body.style.overflow = "unset";
     };
-  }, []);
+  }, [isDone, onEndCallback]);
 
   return (
     <div className={cn("fixed top-[78px] bottom-0 left-0 right-0 flex items-center justify-center bg-background z-10", { "top-0": window.scrollY > 0 })}>
@@ -45,4 +56,4 @@ const AiLoader: React.FC = () => {
   );
 };
 
-export default AiLoader;
+export default React.memo(AiLoader);

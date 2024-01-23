@@ -6,6 +6,8 @@ import CardError from "@/src/components/Dashboard/CardError/CardError";
 import AsyncComponent from "@/src/components/AsyncComponent/AsyncComponent";
 import CardLoader from "@/src/components/Dashboard/CardLoader/CardLoader";
 import HistoryCardLoader from "@/src/components/Dashboard/HistoryCard/HistoryCardLoader";
+import PopularTopicCard from "@/src/components/Dashboard/PopularTopicCard/PopularTopicCard";
+import PopularTopicCardLoader from "@/src/components/Dashboard/PopularTopicCard/PopularTopicCardLoader";
 
 export default async function Home() {
   return (
@@ -14,7 +16,9 @@ export default async function Home() {
         <QuestionGenerateForm />
       </div>
       <div className="min-h-[250px] sm:col-start-1 sm:col-end-3 md:row-end-3 md:col-start-1 md:col-end-3 lg:row-span-2 lg:col-auto">
-        <CardLoader />
+        <AsyncComponent loader={<PopularTopicCardLoader />} errorComponent={<CardError text="popular topics" />}>
+          <PopularTopicCard />
+        </AsyncComponent>
       </div>
       <div className="min-h-[250px]">
         <AsyncComponent loader={<HistoryCardLoader />} errorComponent={<CardError text="history" />}>
