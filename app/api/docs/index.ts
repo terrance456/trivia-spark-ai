@@ -49,6 +49,8 @@
  *            type: string
  *          question:
  *            $ref: "#/components/schemas/Question"
+ *          question_no:
+ *            $ref: number
  *          answers:
  *            type: array
  *            items:
