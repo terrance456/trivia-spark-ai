@@ -82,6 +82,8 @@ export async function POST(request: NextRequest) {
       prev_question_id: currentQuestionIndex === 0 ? null : session.questions[currentQuestionIndex - 1].question_id,
       question: { _id: currentQuestion.question_id, title: currentQuestion.question_title, user_answer_id: currentQuestion.user_answer_id },
       answers: currentQuestion.answers,
+      user_answer_id: currentQuestion.user_answer_id,
+      question_no: session.questions.findIndex((v: SessionQuestionList) => v.question_id.equals(currentQuestion.question_id)),
     });
   } catch {
     return Response.json({ message: "Failed to fetch question" }, { status: 500 });
