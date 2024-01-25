@@ -16,5 +16,7 @@ export interface GetQuestionResponseClient {
   next_question_id: string;
   prev_question_id: string;
   question: QuestionClient;
+  question_no: number;
   answers: Array<AnswerClient>;
+  user_answer_id: string;
 }
