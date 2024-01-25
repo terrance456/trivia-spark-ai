@@ -11,7 +11,17 @@ export const authConfig = {
       const isLoggedIn = !!auth?.user;
       const redirectUrl = new URL("/signin", nextUrl.origin);
       redirectUrl.searchParams.append("callbackUrl", nextUrl.href);
+
+      if (!isLoggedIn && nextUrl.pathname.startsWith("/signin")) {
+        return true;
+      }
+
       if (!isLoggedIn) {
+        return Response.redirect(redirectUrl);
+      }
+
+      if (isLoggedIn && nextUrl.pathname.startsWith("/signin")) {
+        const redirectUrl = new URL("/", nextUrl.origin);
         return Response.redirect(redirectUrl);
       }
 
