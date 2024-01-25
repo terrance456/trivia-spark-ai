@@ -45,7 +45,11 @@ export const GlobalSettingProvider = ({ children }: PropsWithChildren<unknown>) 
   };
 
   const toggleInfoModal = (value: InfoModalContent) => {
-    setShowInfoModal((prevModal: InfoModalContent) => ({ ...prevModal, ...value }));
+    if (value.open) {
+      setShowInfoModal((prevModal: InfoModalContent) => ({ ...prevModal, ...value }));
+      return;
+    }
+    setShowInfoModal({ open: false });
   };
 
   const generateQuestionHandler = React.useCallback(async (data: GenerateQuestionForm) => {
