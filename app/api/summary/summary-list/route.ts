@@ -26,7 +26,7 @@ export async function GET() {
   try {
     const user = await auth();
     const mongoClient: MongoClient = await getMongoClient();
-    const summaryList: Array<WithId<SummaryDB>> = await mongoClient.db("trivia-spark-ai").collection("Summary").find<SummaryDB>({ user_id: user?.user?.email }).toArray();
+    const summaryList: Array<WithId<SummaryDB>> = (await mongoClient.db("trivia-spark-ai").collection("Summary").find<SummaryDB>({ user_id: user?.user?.email }).toArray()).reverse();
     if (summaryList.length < 1) {
       return Response.json([]);
     }
