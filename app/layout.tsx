@@ -14,6 +14,7 @@ const fontSans: NextFontWithVariable = FontSans({
 export const metadata: Metadata = {
   title: "Trivia Spark Ai",
   description: "Welcome to Trivia Spark Ai",
+  referrer: "no-referrer",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
