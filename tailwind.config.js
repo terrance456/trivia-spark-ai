@@ -73,6 +73,7 @@ module.exports = {
       },
       gridTemplateRows: {
         dashboard: "313px minmax(0, 1fr)",
+        summary: "minmax(0, 1fr) 140px",
       },
     },
   },
