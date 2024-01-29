@@ -7,6 +7,7 @@ import { TimerIcon } from "@radix-ui/react-icons";
 import { cn } from "@/lib/utils";
 import Banner from "../../Banner/Banner";
 import ClientLink from "../../ClientLink/ClientLink";
+import { remainingTimeForward } from "@/src/utils/timeUtil";
 
 export const OngoingQuizCard: React.FC = async () => {
   const response: Array<OngoingSessionResponseClient> = await nextFetch(ApiRoutes.getOngoingSession);
@@ -16,10 +17,7 @@ export const OngoingQuizCard: React.FC = async () => {
   };
 
   const renderTime = (sessionTimeInMillis: number) => {
-    const currentTime: number = new Date().getTime();
-    const timeDiff: number = currentTime - sessionTimeInMillis;
-    const minutes: number = Math.floor((timeDiff / 1000 / 60) % 60);
-    const seconds: number = Math.floor((timeDiff / 1000) % 60);
+    const { minutes, seconds } = remainingTimeForward(sessionTimeInMillis);
     return (
       <>
         <TimerIcon className={cn("h-3 w-3 mr-2", { "text-yellow-500": minutes >= 8 })} />
