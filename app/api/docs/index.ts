@@ -140,7 +140,7 @@
  *          type: string
  *         answer_id:
  *          type: string
- *         asnwers:
+ *         answers:
  *          type: array
  *          items:
  *            $ref: "#/components/schemas/Answer"

@@ -1,3 +1,3 @@
 export interface CompleteQuizResponseClient {
-  completion_id: string;
+  completed_id: string;
 }

@@ -40,7 +40,6 @@ const QuestionAnswerSection: React.FC<QuestionAnswerSectionProps> = ({ details }
     }
     if (!details.next_question_id) {
       await endQuizSubmission();
-      setIsSubmitting(false);
       return;
     }
     router.push(`/question?topic_id=${details.topic_id}&session_id=${details._id}&question_id=${details.next_question_id}`);
@@ -72,9 +71,9 @@ const QuestionAnswerSection: React.FC<QuestionAnswerSectionProps> = ({ details }
     try {
       const body: string = JSON.stringify({ session_id: details._id });
       const response: CompleteQuizResponseClient = await nextFetch(ApiRoutes.completeQuiz, { method: "POST", body }, false);
-      console.log(response);
-      // TODO: forward to history page
+      router.replace(`/summary?completion_id=${response.completed_id}`);
     } catch (error: any) {
+      setIsSubmitting(false);
       toggleInfoModal({ open: true, header: "Unexpected error", content: error.message });
     }
   };
@@ -87,7 +86,7 @@ const QuestionAnswerSection: React.FC<QuestionAnswerSectionProps> = ({ details }
       content: "Quiz time has ended, please retake the quiz.",
       preventBackdropClose: true,
       onClose: () => {
-        // router.push("/");
+        router.push("/");
       },
     });
   };
