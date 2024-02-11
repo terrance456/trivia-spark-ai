@@ -1,11 +1,12 @@
 import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/src/components/ui/card";
 import { cn } from "@/lib/utils";
-import { RocketIcon } from "@radix-ui/react-icons";
+import { ArrowRightIcon, RocketIcon } from "@radix-ui/react-icons";
 import { GetSummaryListClient, GetSummaryListResponseClient } from "@/src/apis/models/response/GetSummaryListResponseClient";
 import { nextFetch } from "@/src/apis/fetch";
 import { ApiRoutes } from "@/src/apis/routes.enum";
 import ClientLink from "../../ClientLink/ClientLink";
+import { Button } from "../../ui/button";
 
 const HistoryCard: React.FC = async () => {
   const response: GetSummaryListResponseClient = await nextFetch(ApiRoutes.getSummaryList, { next: { revalidate: 0 } });
@@ -44,6 +45,13 @@ const HistoryCard: React.FC = async () => {
             </li>
           ))}
         </ul>
+        {response.length > 6 && (
+          <div>
+            <Button className="mt-4 p-0 ml-auto flex w-auto" variant="link" size="sm">
+              More <ArrowRightIcon className="h-4 w-4 ml-2" />
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
