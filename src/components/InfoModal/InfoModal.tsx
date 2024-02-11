@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 
@@ -23,6 +23,7 @@ const InfoModal: React.FC<InfoModalProps> = ({ header, content, onClose, prevent
               }
             : undefined
         }
+        onClickTitleBtn={onClose}
       >
         <DialogHeader>
           <DialogTitle>{header}</DialogTitle>

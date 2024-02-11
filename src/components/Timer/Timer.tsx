@@ -8,7 +8,7 @@ const calculateMinuteSeconds = (timerDuration: number, startTimer: Date) => {
   const timeleft: number = new Date(startTimer.getTime() + timerDuration * 60 * 1000).getTime() - Date.now();
   const minutes: number = Math.floor((timeleft % (1000 * 60 * 60)) / msPerMinute);
   const seconds: number = Math.floor((timeleft % (1000 * 60)) / msPerSecond);
-  return { minutes: minutes >= 0 ? minutes : 0, seconds: seconds >= 0 ? seconds : 0 };
+  return { minutes: minutes > 0 ? minutes : 0, seconds: seconds > 0 ? seconds : 0 };
 };
 
 interface TimerProps {
@@ -24,7 +24,7 @@ const Timer: React.FC<TimerProps> = ({ timerDuration, startTimer = new Date(), o
   const intervalIdRef: MutableRefObject<NodeJS.Timeout | undefined> = React.useRef<NodeJS.Timeout | undefined>();
 
   React.useEffect(() => {
-    if (Number(formattedSeconds) === 0) {
+    if (Number(formattedMinutes) <= 0 && Number(formattedSeconds) <= 0) {
       return;
     }
     intervalIdRef.current = setInterval(() => {
