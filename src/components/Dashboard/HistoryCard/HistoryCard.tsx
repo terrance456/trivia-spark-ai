@@ -47,9 +47,11 @@ const HistoryCard: React.FC = async () => {
         </ul>
         {response.length > 6 && (
           <div>
-            <Button className="mt-4 p-0 ml-auto flex w-auto" variant="link" size="sm">
-              More <ArrowRightIcon className="h-4 w-4 ml-2" />
-            </Button>
+            <ClientLink enableRefresh href="/summary-list">
+              <Button className="mt-4 p-0 ml-auto flex w-auto" variant="link" size="sm">
+                More <ArrowRightIcon className="h-4 w-4 ml-2" />
+              </Button>
+            </ClientLink>
           </div>
         )}
       </CardContent>
