@@ -189,9 +189,18 @@
  *          $ref: "#/components/schemas/GetQuizSummaryModel"
  *
  *    GetAllQuizSummaryResponse:
- *        type: array
- *        items:
- *          $ref: "#/components/schemas/GetQuizSummaryModel"
+ *        type: object
+ *        properties:
+ *          _id:
+ *           type: string
+ *          no_of_question:
+ *           type: number
+ *          topic_name:
+ *           type: string
+ *          score:
+ *           type: number
+ *          date:
+ *           type: number
  *
  *    GetSummaryListResponse:
  *        type: array
