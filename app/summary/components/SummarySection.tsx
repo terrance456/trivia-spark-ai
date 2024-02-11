@@ -5,6 +5,7 @@ import QuestionAnswer from "@/app/question/components/QuestionAnswer";
 import AchievementCard from "./AchievementCard";
 import TimerScoreCard from "./TimerScoreCard";
 import AccuracyScoreCard from "./AccuracyScoreCard";
+import Confetti from "@/src/components/Confetti/Confetti";
 
 interface SummarySectionProps {
   details: GetQuizSummaryResponseClient;
@@ -42,6 +43,7 @@ const SummarySection: React.FC<SummarySectionProps> = ({ details }: SummarySecti
           />
         ))}
       </div>
+      <Confetti />
     </section>
   );
 };
