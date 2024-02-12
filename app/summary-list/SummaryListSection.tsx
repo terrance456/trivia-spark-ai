@@ -34,7 +34,7 @@ const SummaryListSection: React.FC<SummaryListSectionProps> = (props: SummaryLis
       accessorKey: "date",
       header: ({ column }) => {
         return (
-          <span className="flex items-center" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+          <span className="flex items-center cursor-pointer" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
             Date {handleSortingIcon(column.getIsSorted())}
           </span>
         );
@@ -49,7 +49,7 @@ const SummaryListSection: React.FC<SummaryListSectionProps> = (props: SummaryLis
       accessorKey: "topic_name",
       header: ({ column }) => {
         return (
-          <span className="flex items-center" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+          <span className="flex items-center cursor-pointer" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
             Topic {handleSortingIcon(column.getIsSorted())}
           </span>
         );
@@ -62,7 +62,7 @@ const SummaryListSection: React.FC<SummaryListSectionProps> = (props: SummaryLis
       accessorKey: "no_of_question",
       header: ({ column }) => {
         return (
-          <span className="flex items-center" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+          <span className="flex items-center cursor-pointer" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
             No of question {handleSortingIcon(column.getIsSorted())}
           </span>
         );
@@ -72,7 +72,7 @@ const SummaryListSection: React.FC<SummaryListSectionProps> = (props: SummaryLis
       accessorKey: "score",
       header: ({ column }) => {
         return (
-          <span className="flex items-center" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+          <span className="flex items-center cursor-pointer" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
             Score {handleSortingIcon(column.getIsSorted())}
           </span>
         );
