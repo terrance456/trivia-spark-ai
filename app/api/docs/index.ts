@@ -211,4 +211,21 @@
  *        items:
  *          $ref: "#/components/schemas/PopularTopicModel"
  *
+ *    CheckoutStripePayload:
+ *        type: object
+ *        properties:
+ *          product_id:
+ *           type: string
+ *
+ *    CheckoutStripeResponse:
+ *        type: object
+ *        properties:
+ *          url:
+ *           type: string
+ *
+ *    GetUserCreditsResponse:
+ *        type: object
+ *        properties:
+ *          credits:
+ *           type: number
  */

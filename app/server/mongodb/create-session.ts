@@ -3,14 +3,15 @@ import { QuestionDB } from "../models/questiondb";
 import { MongoClient, ObjectId, WithId } from "mongodb";
 import { AnswerDB } from "../models/answerdb";
 import { TopicDB } from "../models/topicdb";
+import { CollectionName, DBName } from "./mongodb.enum";
 
 export async function generateQuestionSession(topic: TopicDB, userEmail: string, mongoClient: MongoClient) {
-  const questions = await mongoClient.db("trivia-spark-ai").collection<QuestionDB>("Questions").find({ topic_id: topic._id }).toArray();
+  const questions = await mongoClient.db(DBName.TRIVIA_SPARK_AI).collection<QuestionDB>(CollectionName.QUESTIONS).find({ topic_id: topic._id }).toArray();
   const answers: Array<AnswerDB> = [];
   const answersPromise: Array<Promise<WithId<AnswerDB>[]>> = [];
 
   questions.forEach(async (question: QuestionDB) => {
-    answersPromise.push(mongoClient.db("trivia-spark-ai").collection<AnswerDB>("Answers").find({ question_id: question._id }).toArray());
+    answersPromise.push(mongoClient.db(DBName.TRIVIA_SPARK_AI).collection<AnswerDB>(CollectionName.ANSWERS).find({ question_id: question._id }).toArray());
   });
 
   answers.push(...(await Promise.all(answersPromise)).flat());
@@ -38,7 +39,7 @@ export async function generateQuestionSession(topic: TopicDB, userEmail: string,
     user_id: userEmail,
     created_at: Date.now(),
   };
-  const session = await mongoClient.db("trivia-spark-ai").collection("QuestionsSessions").insertOne(sessionDBDetails);
+  const session = await mongoClient.db(DBName.TRIVIA_SPARK_AI).collection(CollectionName.QUESTIONSSESSIONS).insertOne(sessionDBDetails);
 
   return {
     _id: session.insertedId,

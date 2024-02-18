@@ -3,9 +3,12 @@ import { validateGPTOutput } from "@/app/server/gpt/validate";
 import { ProfanityT } from "@/app/server/models/profanity";
 import { GenerateQuestionsRequestT, generateQuestionRequestSchema } from "@/app/server/models/requests/generate-questions";
 import { TopicDB } from "@/app/server/models/topicdb";
+import { Users } from "@/app/server/models/usersdb";
 import { getMongoClient } from "@/app/server/mongodb/connection";
 import { generateQuestionSession } from "@/app/server/mongodb/create-session";
 import { insertQuestionToDB, insertTopicToDB, insertAnswerToDB, updateTopicCount } from "@/app/server/mongodb/format-question-answer";
+import { CollectionName, DBName } from "@/app/server/mongodb/mongodb.enum";
+import { deductCredits } from "@/app/server/mongodb/users-method";
 import { auth } from "@/src/auth/auth";
 import { MongoClient, WithId } from "mongodb";
 
@@ -62,12 +65,20 @@ export async function POST(request: Request) {
   try {
     const mongoClient: MongoClient = await getMongoClient();
     const userEmail: string = (await auth())?.user?.email as string;
-    const topic: WithId<TopicDB> | null = await mongoClient.db("trivia-spark-ai").collection("Topics").findOne<TopicDB>({ topic_name: parsedPayload.data.topic.toLocaleLowerCase(), no_of_question: parsedPayload.data.no_of_questions });
+    const dbUser: Users | null = await mongoClient.db(DBName.TRIVIA_SPARK_AI).collection<Users>(CollectionName.USERS).findOne({ email: userEmail });
+    if (dbUser && dbUser.credits < 1) {
+      return Response.json({ message: "Please purchase more credits to generate more quizzes" }, { status: 400 });
+    }
 
+    const topic: WithId<TopicDB> | null = await mongoClient
+      .db(DBName.TRIVIA_SPARK_AI)
+      .collection(CollectionName.TOPICS)
+      .findOne<TopicDB>({ topic_name: parsedPayload.data.topic.toLocaleLowerCase(), no_of_question: parsedPayload.data.no_of_questions });
     // Send availalble questions
     if (topic) {
       const finalResponse = await generateQuestionSession(topic, userEmail, mongoClient);
       await updateTopicCount(topic._id, mongoClient);
+      await deductCredits(mongoClient, userEmail);
       return Response.json(finalResponse);
     }
 
@@ -79,8 +90,9 @@ export async function POST(request: Request) {
     const topicDetails = await insertTopicToDB(parsedPayload.data.topic, parsedPayload.data.no_of_questions, mongoClient);
     const questionsDetails = await insertQuestionToDB(res, topicDetails.insertedId, mongoClient);
     await insertAnswerToDB(res, questionsDetails.insertedIds, topicDetails.insertedId, mongoClient);
-    const latestTopic: WithId<TopicDB> | null = await mongoClient.db("trivia-spark-ai").collection("Topics").findOne<TopicDB>({ _id: topicDetails.insertedId });
+    const latestTopic: WithId<TopicDB> | null = await mongoClient.db(DBName.TRIVIA_SPARK_AI).collection(CollectionName.TOPICS).findOne<TopicDB>({ _id: topicDetails.insertedId });
     const finalResponse = await generateQuestionSession(latestTopic as TopicDB, userEmail, mongoClient);
+    await deductCredits(mongoClient, userEmail);
     return Response.json(finalResponse);
   } catch {
     return Response.json({ message: "Question generation has failed, please try again later" }, { status: 500 });
