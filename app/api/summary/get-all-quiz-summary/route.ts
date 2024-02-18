@@ -1,5 +1,6 @@
 import { SummaryDB } from "@/app/server/models/summarydb";
 import { getMongoClient } from "@/app/server/mongodb/connection";
+import { CollectionName, DBName } from "@/app/server/mongodb/mongodb.enum";
 import { auth } from "@/src/auth/auth";
 import { MongoClient, WithId } from "mongodb";
 
@@ -26,7 +27,7 @@ export async function GET() {
   try {
     const user = await auth();
     const mongoClient: MongoClient = await getMongoClient();
-    const summaryList: Array<WithId<SummaryDB>> = await mongoClient.db("trivia-spark-ai").collection("Summary").find<SummaryDB>({ user_id: user?.user?.email }).sort({ _id: -1 }).toArray();
+    const summaryList: Array<WithId<SummaryDB>> = await mongoClient.db(DBName.TRIVIA_SPARK_AI).collection(CollectionName.SUMMARY).find<SummaryDB>({ user_id: user?.user?.email }).sort({ _id: -1 }).toArray();
     if (summaryList.length < 1) {
       return Response.json([]);
     }

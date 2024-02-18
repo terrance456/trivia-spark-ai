@@ -5,6 +5,7 @@ import { MongoClient } from "mongodb";
 import { getMongoClient } from "@/app/server/mongodb/connection";
 import { Users } from "@/app/server/models/usersdb";
 import { productCredits } from "@/app/server/mongodb/users-method";
+import { CollectionName, DBName } from "@/app/server/mongodb/mongodb.enum";
 /**
  * @swagger
  * /api/stripe/hook:
@@ -30,8 +31,8 @@ export async function POST(req: Request) {
       const productList: Stripe.Product[] = (await stripe.products.list()).data;
 
       await mongoClient
-        .db("trivia-spark-ai")
-        .collection<Users>("Users")
+        .db(DBName.TRIVIA_SPARK_AI)
+        .collection<Users>(CollectionName.USERS)
         .findOneAndUpdate({ email }, { $push: { payments: payment }, $inc: { credits: productCredits(productList, productPrice) } });
     }
 

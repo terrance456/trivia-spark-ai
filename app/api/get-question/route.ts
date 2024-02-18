@@ -1,6 +1,7 @@
 import { QuestionsSessionDB, SessionQuestionList } from "@/app/server/models/questionssessiondb";
 import { GetQuestionRequestSchemaT, getQuestionRequestSchema } from "@/app/server/models/requests/get-question";
 import { getMongoClient } from "@/app/server/mongodb/connection";
+import { CollectionName, DBName } from "@/app/server/mongodb/mongodb.enum";
 import { auth } from "@/src/auth/auth";
 import { MongoClient, ObjectId } from "mongodb";
 import { NextRequest } from "next/server";
@@ -46,8 +47,8 @@ export async function POST(request: NextRequest) {
   try {
     const mongoClient: MongoClient = await getMongoClient();
     const session = await mongoClient
-      .db("trivia-spark-ai")
-      .collection("QuestionsSessions")
+      .db(DBName.TRIVIA_SPARK_AI)
+      .collection(CollectionName.QUESTIONSSESSIONS)
       .findOne<QuestionsSessionDB>({ _id: new ObjectId(parsedPayload.data.session_id) });
 
     if (!session) {

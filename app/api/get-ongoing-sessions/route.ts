@@ -1,5 +1,6 @@
 import { QuestionsSessionDB } from "@/app/server/models/questionssessiondb";
 import { getMongoClient } from "@/app/server/mongodb/connection";
+import { CollectionName, DBName } from "@/app/server/mongodb/mongodb.enum";
 import { auth } from "@/src/auth/auth";
 import { MongoClient, WithId } from "mongodb";
 
@@ -27,7 +28,7 @@ export async function GET() {
   try {
     const user = await auth();
     const mongoClient: MongoClient = await getMongoClient();
-    const session: Array<WithId<QuestionsSessionDB>> = await mongoClient.db("trivia-spark-ai").collection("QuestionsSessions").find<QuestionsSessionDB>({ user_id: user?.user?.email }).toArray();
+    const session: Array<WithId<QuestionsSessionDB>> = await mongoClient.db(DBName.TRIVIA_SPARK_AI).collection(CollectionName.QUESTIONSSESSIONS).find<QuestionsSessionDB>({ user_id: user?.user?.email }).toArray();
 
     if (session.length < 1) {
       return Response.json([]);
@@ -46,8 +47,8 @@ export async function GET() {
 
     if (removeSession.length > 0) {
       await mongoClient
-        .db("trivia-spark-ai")
-        .collection<QuestionsSessionDB>("QuestionsSessions")
+        .db(DBName.TRIVIA_SPARK_AI)
+        .collection<QuestionsSessionDB>(CollectionName.QUESTIONSSESSIONS)
         .deleteMany({ _id: { $in: removeSession.map((v: WithId<QuestionsSessionDB>) => v._id) } });
     }
 

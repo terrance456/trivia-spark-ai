@@ -1,5 +1,6 @@
 import { MongoClient } from "mongodb";
 import Stripe from "stripe";
+import { CollectionName, DBName } from "./mongodb.enum";
 
 export function productCredits(list: Stripe.Product[], productId: string) {
   const currentProduct: Stripe.Product | undefined = list.find((item: Stripe.Product) => item.default_price === productId);
@@ -15,7 +16,7 @@ export function productCredits(list: Stripe.Product[], productId: string) {
 
 export function deductCredits(mongoClient: MongoClient, email: string) {
   return mongoClient
-    .db("trivia-spark-ai")
-    .collection("Users")
+    .db(DBName.TRIVIA_SPARK_AI)
+    .collection(CollectionName.USERS)
     .findOneAndUpdate({ email }, { $inc: { credits: -1 } });
 }

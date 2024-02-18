@@ -2,6 +2,7 @@ import { Answer } from "@/app/server/models/answer";
 import { QuestionsSessionDB, SessionQuestionList } from "@/app/server/models/questionssessiondb";
 import { submitQuestionRequestSchema, SubmitQuestionRequestSchemaT } from "@/app/server/models/requests/submit-question";
 import { getMongoClient } from "@/app/server/mongodb/connection";
+import { CollectionName, DBName } from "@/app/server/mongodb/mongodb.enum";
 import { auth } from "@/src/auth/auth";
 import { MongoClient, ObjectId } from "mongodb";
 import { NextRequest } from "next/server";
@@ -47,8 +48,8 @@ export async function POST(request: NextRequest) {
   try {
     const mongoClient: MongoClient = await getMongoClient();
     const session = await mongoClient
-      .db("trivia-spark-ai")
-      .collection("QuestionsSessions")
+      .db(DBName.TRIVIA_SPARK_AI)
+      .collection(CollectionName.QUESTIONSSESSIONS)
       .findOne<QuestionsSessionDB>({ _id: new ObjectId(parsedPayload.data.session_id) });
 
     if (!session) {
@@ -82,8 +83,8 @@ export async function POST(request: NextRequest) {
     // patch user answer
     try {
       await mongoClient
-        .db("trivia-spark-ai")
-        .collection("QuestionsSessions")
+        .db(DBName.TRIVIA_SPARK_AI)
+        .collection(CollectionName.QUESTIONSSESSIONS)
         .updateOne({ _id: session._id, questions: { $elemMatch: { question_id: currentQuestion.question_id } } }, { $set: { "questions.$.user_answer_id": parsedPayload.data.answer_id, "questions.$.completed": true } });
     } catch {
       return Response.json({ message: "Answer updatation failed, please try again later" }, { status: 500 });
