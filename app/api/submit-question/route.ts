@@ -1,10 +1,8 @@
-import { Answer } from "@/app/server/models/answer";
-import { QuestionsSessionDB, SessionQuestionList } from "@/app/server/models/questionssessiondb";
 import { submitQuestionRequestSchema, SubmitQuestionRequestSchemaT } from "@/app/server/models/requests/submit-question";
-import { getMongoClient } from "@/app/server/mongodb/connection";
-import { CollectionName, DBName } from "@/app/server/mongodb/mongodb.enum";
+import { AnswerT } from "@/app/server/mongodb/schema/answers.schema";
+import { QuestionsSessionsSchema, SessionQuestionList } from "@/app/server/mongodb/schema/questions-session.schema";
 import { auth } from "@/src/auth/auth";
-import { MongoClient, ObjectId } from "mongodb";
+import { Types } from "mongoose";
 import { NextRequest } from "next/server";
 
 /**
@@ -46,11 +44,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const mongoClient: MongoClient = await getMongoClient();
-    const session = await mongoClient
-      .db(DBName.TRIVIA_SPARK_AI)
-      .collection(CollectionName.QUESTIONSSESSIONS)
-      .findOne<QuestionsSessionDB>({ _id: new ObjectId(parsedPayload.data.session_id) });
+    const session = await QuestionsSessionsSchema.findOne({ _id: new Types.ObjectId(parsedPayload.data.session_id) });
 
     if (!session) {
       return Response.json({ message: "Invalid session id" }, { status: 400 });
@@ -61,16 +55,16 @@ export async function POST(request: NextRequest) {
       return Response.json({ message: "Invalid user" }, { status: 400 });
     }
 
-    if (!session.topic_id.equals(new ObjectId(parsedPayload.data.topic_id))) {
+    if (!session.topic_id.equals(new Types.ObjectId(parsedPayload.data.topic_id))) {
       return Response.json({ message: "Invalid topic id" }, { status: 400 });
     }
 
-    const currentQuestion: SessionQuestionList | undefined = session.questions.find((question: SessionQuestionList) => question.question_id.equals(new ObjectId(parsedPayload.data.question_id)));
+    const currentQuestion: SessionQuestionList | undefined = session.questions.find((question: SessionQuestionList) => question.question_id.equals(new Types.ObjectId(parsedPayload.data.question_id)));
     if (!currentQuestion) {
       return Response.json({ message: "Invalid question id" }, { status: 400 });
     }
 
-    const currentAnswer: Answer | undefined = currentQuestion.answers.find((answer: Answer) => answer._id.equals(new ObjectId(parsedPayload.data.answer_id)));
+    const currentAnswer: AnswerT | undefined = currentQuestion.answers.find((answer: AnswerT) => answer._id.equals(new Types.ObjectId(parsedPayload.data.answer_id)));
     if (!currentAnswer) {
       return Response.json({ message: "Invalid asnwer id" }, { status: 400 });
     }
@@ -82,10 +76,7 @@ export async function POST(request: NextRequest) {
 
     // patch user answer
     try {
-      await mongoClient
-        .db(DBName.TRIVIA_SPARK_AI)
-        .collection(CollectionName.QUESTIONSSESSIONS)
-        .updateOne({ _id: session._id, questions: { $elemMatch: { question_id: currentQuestion.question_id } } }, { $set: { "questions.$.user_answer_id": parsedPayload.data.answer_id, "questions.$.completed": true } });
+      await QuestionsSessionsSchema.updateOne({ _id: session._id, questions: { $elemMatch: { question_id: currentQuestion.question_id } } }, { $set: { "questions.$.user_answer_id": parsedPayload.data.answer_id, "questions.$.completed": true } });
     } catch {
       return Response.json({ message: "Answer updatation failed, please try again later" }, { status: 500 });
     }

@@ -1,8 +1,5 @@
-import { QuestionsSessionDB } from "@/app/server/models/questionssessiondb";
-import { getMongoClient } from "@/app/server/mongodb/connection";
-import { CollectionName, DBName } from "@/app/server/mongodb/mongodb.enum";
+import { QuestionsSessionsDB, QuestionsSessionsSchema } from "@/app/server/mongodb/schema/questions-session.schema";
 import { auth } from "@/src/auth/auth";
-import { MongoClient, WithId } from "mongodb";
 
 /**
  * @swagger
@@ -27,17 +24,16 @@ import { MongoClient, WithId } from "mongodb";
 export async function GET() {
   try {
     const user = await auth();
-    const mongoClient: MongoClient = await getMongoClient();
-    const session: Array<WithId<QuestionsSessionDB>> = await mongoClient.db(DBName.TRIVIA_SPARK_AI).collection(CollectionName.QUESTIONSSESSIONS).find<QuestionsSessionDB>({ user_id: user?.user?.email }).toArray();
+    const session: Array<QuestionsSessionsDB> = await QuestionsSessionsSchema.find({ user_id: user?.user?.email });
 
     if (session.length < 1) {
       return Response.json([]);
     }
 
-    const filterSession: Array<WithId<QuestionsSessionDB>> = [];
-    const removeSession: Array<WithId<QuestionsSessionDB>> = [];
+    const filterSession: Array<QuestionsSessionsDB> = [];
+    const removeSession: Array<QuestionsSessionsDB> = [];
 
-    session.forEach((v: WithId<QuestionsSessionDB>) => {
+    session.forEach((v: QuestionsSessionsDB) => {
       if (v.started_at + 60 * 10 * 1000 >= Date.now()) {
         filterSession.push(v);
         return;
@@ -46,14 +42,11 @@ export async function GET() {
     });
 
     if (removeSession.length > 0) {
-      await mongoClient
-        .db(DBName.TRIVIA_SPARK_AI)
-        .collection<QuestionsSessionDB>(CollectionName.QUESTIONSSESSIONS)
-        .deleteMany({ _id: { $in: removeSession.map((v: WithId<QuestionsSessionDB>) => v._id) } });
+      await QuestionsSessionsSchema.deleteMany({ _id: { $in: removeSession.map((v: QuestionsSessionsDB) => v._id) } });
     }
 
     return Response.json(
-      filterSession.map((v: WithId<QuestionsSessionDB>) => ({
+      filterSession.map((v: QuestionsSessionsDB) => ({
         question_id: v.questions[0].question_id,
         session_id: v._id,
         topic_id: v.topic_id,

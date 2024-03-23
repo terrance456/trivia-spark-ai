@@ -1,9 +1,7 @@
 import { getQuizSummarySchema } from "@/app/server/models/requests/get-quiz-summary";
-import { SummaryDB } from "@/app/server/models/summarydb";
-import { getMongoClient } from "@/app/server/mongodb/connection";
-import { CollectionName, DBName } from "@/app/server/mongodb/mongodb.enum";
+import { SummaryDB, SummarySchema } from "@/app/server/mongodb/schema/summary.schema";
 import { auth } from "@/src/auth/auth";
-import { MongoClient, ObjectId, WithId } from "mongodb";
+import { Types } from "mongoose";
 
 /**
  * @swagger
@@ -41,11 +39,7 @@ export async function GET(_: Request, { params }: { params: { slug: string } }) 
 
   try {
     const user = await auth();
-    const mongoClient: MongoClient = await getMongoClient();
-    const summary: WithId<SummaryDB> | null = await mongoClient
-      .db(DBName.TRIVIA_SPARK_AI)
-      .collection(CollectionName.SUMMARY)
-      .findOne<SummaryDB>({ user_id: user?.user?.email, _id: new ObjectId(parsedPayload.data.completion_id) });
+    const summary: SummaryDB | null = await SummarySchema.findOne({ user_id: user?.user?.email, _id: new Types.ObjectId(parsedPayload.data.completion_id) });
     if (!summary) {
       return Response.json({ message: "Summary details for this quiz doesnt exist" }, { status: 400 });
     }
