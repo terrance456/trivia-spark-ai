@@ -1,6 +1,5 @@
-import { MongoClient } from "mongodb";
 import Stripe from "stripe";
-import { CollectionName, DBName } from "./mongodb.enum";
+import { UserSchema } from "./schema/users.schema";
 
 export function productCredits(list: Stripe.Product[], productId: string) {
   const currentProduct: Stripe.Product | undefined = list.find((item: Stripe.Product) => item.default_price === productId);
@@ -14,9 +13,6 @@ export function productCredits(list: Stripe.Product[], productId: string) {
   }
 }
 
-export function deductCredits(mongoClient: MongoClient, email: string) {
-  return mongoClient
-    .db(DBName.TRIVIA_SPARK_AI)
-    .collection(CollectionName.USERS)
-    .findOneAndUpdate({ email }, { $inc: { credits: -1 } });
+export function deductCredits(email: string) {
+  return UserSchema.findOneAndUpdate({ email }, { $inc: { credits: -1 } });
 }
