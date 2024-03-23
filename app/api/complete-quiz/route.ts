@@ -1,10 +1,9 @@
-import { QuestionsSessionDB, SessionQuestionList } from "@/app/server/models/questionssessiondb";
 import { CompleteQuizRequestSchemaT, completeQuizRequestSchema } from "@/app/server/models/requests/complete-quiz";
 import { formatCompletedQuiz } from "@/app/server/mongodb/completed-quiz";
-import { getMongoClient } from "@/app/server/mongodb/connection";
-import { CollectionName, DBName } from "@/app/server/mongodb/mongodb.enum";
+import { QuestionsSessionsDB, QuestionsSessionsSchema, SessionQuestionList } from "@/app/server/mongodb/schema/questions-session.schema";
+import { SummaryDB, SummarySchema } from "@/app/server/mongodb/schema/summary.schema";
 import { auth } from "@/src/auth/auth";
-import { InsertOneResult, MongoClient, ObjectId } from "mongodb";
+import { Types } from "mongoose";
 import { NextRequest } from "next/server";
 
 /**
@@ -46,11 +45,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const mongoClient: MongoClient = await getMongoClient();
-    const session = await mongoClient
-      .db(DBName.TRIVIA_SPARK_AI)
-      .collection(CollectionName.QUESTIONSSESSIONS)
-      .findOne<QuestionsSessionDB>({ _id: new ObjectId(parsedPayload.data.session_id) });
+    const session: QuestionsSessionsDB | null = await QuestionsSessionsSchema.findOne({ _id: new Types.ObjectId(parsedPayload.data.session_id) });
 
     if (!session) {
       return Response.json({ message: "Invalid session id" }, { status: 400 });
@@ -71,9 +66,9 @@ export async function POST(request: NextRequest) {
     }
 
     const formattedQuizSummary = formatCompletedQuiz(session, completedTime);
-    const res: InsertOneResult<Document> = await mongoClient.db(DBName.TRIVIA_SPARK_AI).collection(CollectionName.SUMMARY).insertOne(formattedQuizSummary);
-    await mongoClient.db(DBName.TRIVIA_SPARK_AI).collection(CollectionName.QUESTIONSSESSIONS).deleteOne({ _id: session._id });
-    return Response.json({ completed_id: res.insertedId });
+    const res: SummaryDB = await new SummarySchema(formattedQuizSummary).save();
+    await QuestionsSessionsSchema.deleteOne({ _id: session._id });
+    return Response.json({ completed_id: res._id });
   } catch {
     return Response.json({ message: "Failed to complete quiz, please try again" }, { status: 500 });
   }

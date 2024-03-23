@@ -1,7 +1,6 @@
-import { WithId } from "mongodb";
-import { QuestionsSessionDB, SessionQuestionList } from "../models/questionssessiondb";
+import { QuestionsSessionsDB, SessionQuestionList } from "./schema/questions-session.schema";
 
-export function formatCompletedQuiz(data: WithId<QuestionsSessionDB>, completed_at: number) {
+export function formatCompletedQuiz(data: QuestionsSessionsDB, completed_at: number) {
   const { questions, started_at, topic_name, topic_id, user_id } = data;
   const formattedQuestions = questions.map(({ completed, ...item }: SessionQuestionList) => ({
     ...item,

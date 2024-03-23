@@ -8,4 +8,5 @@ export enum ApiRoutes {
   getOngoingSession = "/api/get-ongoing-sessions",
   getSummaryList = "/api/summary/summary-list",
   getPopularTopics = "/api/popular-topics",
+  getUserInfo = "/api/users/credits",
 }
